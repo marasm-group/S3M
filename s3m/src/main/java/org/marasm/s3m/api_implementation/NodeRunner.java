@@ -29,12 +29,13 @@ public class NodeRunner {
 
     private S3MQueue errorQueue;
     private S3MQueueConnector errorQueueConnector;
+    @Builder.Default
     private S3MSerializer serializer = new S3MJsonSerializer();
 
     @Builder.Default
     private int pollingInterval = 0;
 
-    public void runLoop() throws Exception {
+    public void runLoop() {
 
         while (true) {
             ArrayList<byte[]> params = new ArrayList<>(inputQueues.size());

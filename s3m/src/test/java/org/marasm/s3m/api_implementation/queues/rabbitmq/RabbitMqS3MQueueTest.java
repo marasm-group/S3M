@@ -3,6 +3,7 @@ package org.marasm.s3m.api_implementation.queues.rabbitmq;
 import com.marasm.jtdispatch.DispatchQueue;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 import org.junit.Test;
 import org.marasm.s3m.api.S3MNode;
 import org.marasm.s3m.api.nodes.ConsumerS3MNode;
@@ -32,21 +33,9 @@ public class RabbitMqS3MQueueTest {
     @Test
     public void testQueue() throws Exception {
 
-        DispatchQueue.get("Consumer").async(() -> {
-            try {
-                consumerThread();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        DispatchQueue.get("Consumer").async(this::consumerThread);
 
-        DispatchQueue.get("Supplier").async(() -> {
-            try {
-                supplierThread();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        DispatchQueue.get("Supplier").async(this::supplierThread);
 
         Thread.sleep(5000);
     }
@@ -59,7 +48,8 @@ public class RabbitMqS3MQueueTest {
         queueConnector.put(queue, data);
     }
 
-    public void supplierThread() throws Exception {
+    @SneakyThrows
+    public void supplierThread() {
         S3MNode supplier = new SupplierS3MNode(new Supplier<List<Serializable>>() {
             private int i = 1;
 
@@ -85,10 +75,11 @@ public class RabbitMqS3MQueueTest {
                 .build().runLoop();
     }
 
-    public void consumerThread() throws Exception {
+    @SneakyThrows
+    public void consumerThread() {
         S3MNode consumer = new ConsumerS3MNode(
                 new Consumer<List<Serializable>>() {
-                    long startTime;
+                    long startTime = System.nanoTime();
 
                     @Override
                     public void accept(List<Serializable> input) {

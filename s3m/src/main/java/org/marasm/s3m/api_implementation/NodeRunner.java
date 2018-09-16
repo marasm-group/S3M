@@ -62,7 +62,7 @@ public class NodeRunner {
             inputQueuesNames.add(queue.getName() + ":" + queue.getId());
             if (i < params.size()) {
                 byte[] data = params.get(i);
-                inputParams.add(serializer.deserialize(data,queue.getMessageClass()));
+                inputParams.add(serializer.deserialize(data, queue.getMessageClass()));
             }
         }
         List<String> outputQueuesNames = new ArrayList<>(inputQueues.size());
@@ -100,7 +100,7 @@ public class NodeRunner {
     }
 
     private void runLoopIteration(List<byte[]> params) throws Throwable {
-        if(inputQueues.isEmpty()) {
+        if (inputQueues.isEmpty()) {
             processByNode(Collections.emptyList());
         } else {
             receive(inputQueues.size(), inputData -> {
@@ -120,8 +120,8 @@ public class NodeRunner {
 
     private List<Serializable> deserialize(List<byte[]> inputData) {
         List<Serializable> result = new ArrayList<>(inputData.size());
-        for(int i = 0; i< inputData.size(); i++) {
-            result.add(i, serializer.deserialize(inputData.get(i),inputQueues.get(i).getMessageClass()));
+        for (int i = 0; i < inputData.size(); i++) {
+            result.add(i, serializer.deserialize(inputData.get(i), inputQueues.get(i).getMessageClass()));
         }
         return result;
     }

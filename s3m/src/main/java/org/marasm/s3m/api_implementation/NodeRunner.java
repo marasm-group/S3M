@@ -18,26 +18,29 @@ import java.util.List;
 @Builder
 public class NodeRunner {
 
+    @Builder.Default
+    public boolean run = true;
     private S3MNode node;
     @Builder.Default
     private List<S3MQueue> inputQueues = new ArrayList<>();
     private S3MQueueConnector inputQueuesConnector;
-
     @Builder.Default
     private List<S3MQueue> outputQueues = new ArrayList<>();
     private S3MQueueConnector outputQueuesConnector;
-
     private S3MQueue errorQueue;
     private S3MQueueConnector errorQueueConnector;
     @Builder.Default
     private S3MSerializer serializer = new S3MJsonSerializer();
-
     @Builder.Default
     private int pollingInterval = 0;
+    @Builder.Default
+    private long throttlingQueueSize = 100; //TODO: find the best default value
+    @Builder.Default
+    private long throttlingDelay = 100; //TODO: find the best default value
 
     public void runLoop() {
 
-        while (true) {
+        while (run) {
             ArrayList<byte[]> params = new ArrayList<>(inputQueues.size());
             try {
                 runLoopIteration(params);
@@ -100,6 +103,10 @@ public class NodeRunner {
     }
 
     private void runLoopIteration(List<byte[]> params) throws Throwable {
+        while (throttling()) {
+            System.out.println("Will slow down due to a jam in output queues"); //TODO: log instead
+            Thread.sleep(throttlingDelay);
+        }
         if (inputQueues.isEmpty()) {
             processByNode(Collections.emptyList());
         } else {
@@ -108,6 +115,15 @@ public class NodeRunner {
                 Thread.sleep(pollingInterval);
             }, params);
         }
+    }
+
+    private boolean throttling() throws IOException {
+        for (S3MQueue queue : outputQueues) {
+            if (outputQueuesConnector.size(queue) > throttlingQueueSize) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void processByNode(List<byte[]> inputData) throws Exception {

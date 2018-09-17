@@ -5,7 +5,6 @@ import org.marasm.s3m.api.nodes.BaseS3MNode;
 
 import javax.script.*;
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +12,9 @@ import java.util.Map;
 
 public class JavaScriptS3MNode extends BaseS3MNode {
 
-    private final Invocable invocable;
+    private final static ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
     private final CompiledScript script;
-    private final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+    private final Invocable invocable;
 
 
     public JavaScriptS3MNode(String jsCode) throws ScriptException {
@@ -24,7 +23,7 @@ public class JavaScriptS3MNode extends BaseS3MNode {
         script = compilable.compile(jsCode);
     }
 
-    public static Object toObject(Object jsObj) throws ParseException {
+    private static Object toObject(Object jsObj) {
 
         if (jsObj == null) {
             return null;
@@ -55,10 +54,21 @@ public class JavaScriptS3MNode extends BaseS3MNode {
     @Override
     public List<Serializable> process(List<Serializable> input) throws Exception {
         script.eval();
-        ScriptObjectMirror result = (ScriptObjectMirror) invocable.invokeFunction("process", input);
-        if (!result.isArray()) {
-            throw new IllegalStateException("expected javascript code to return an array!");
+        Object result = invocable.invokeFunction("process", input);
+        if (result instanceof ScriptObjectMirror) {
+            ScriptObjectMirror resultMirror = (ScriptObjectMirror) result;
+            if (!resultMirror.isArray()) {
+                onUnexpectedResultType();
+            }
+        } else if (result instanceof List) {
+            List<Map<String, Object>> resultMirror = (List<Map<String, Object>>) result;
+        } else {
+            onUnexpectedResultType();
         }
         return (List<Serializable>) toObject(result);
+    }
+
+    private void onUnexpectedResultType() {
+        throw new IllegalStateException("expected javascript code to return an array!");
     }
 }

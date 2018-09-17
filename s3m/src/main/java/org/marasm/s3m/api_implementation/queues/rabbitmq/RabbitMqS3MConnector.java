@@ -27,9 +27,6 @@ public class RabbitMqS3MConnector implements S3MQueueConnector {
     public void connect() throws Exception {
         connection = factory.newConnection();
         channel = connection.createChannel();
-        channel.addShutdownListener(cause -> {
-            System.out.println(cause);
-        });
     }
 
     @Override
@@ -52,12 +49,15 @@ public class RabbitMqS3MConnector implements S3MQueueConnector {
     }
 
     @Override
+    public int size(S3MQueue queue) throws IOException {
+        return channel.queueDeclarePassive(getRemoteId(queue)).getMessageCount();
+    }
+
+    @Override
     public void onReceivePolling(S3MQueue queue, Consumer<byte[]> receiver) throws Exception {
         boolean autoAck = false;
         GetResponse response = channel.basicGet(getRemoteId(queue), autoAck);
-        if (response == null) {
-            // No message retrieved.
-        } else {
+        if (response != null) {
             AMQP.BasicProperties props = response.getProps();
             byte[] body = response.getBody();
             long deliveryTag = response.getEnvelope().getDeliveryTag();

@@ -104,7 +104,7 @@ public class NodeRunner {
 
     private void runLoopIteration(List<byte[]> params) throws Throwable {
         while (throttling()) {
-            System.out.println("Will slow down due to a jam in output queues"); //TODO: log instead
+            //System.out.println("Will slow down due to a jam in output queues"); //TODO: log instead
             Thread.sleep(throttlingDelay);
         }
         if (inputQueues.isEmpty()) {
@@ -130,7 +130,13 @@ public class NodeRunner {
         List<Serializable> output = node.process(deserialize(inputData));
         for (int i = 0; i < outputQueues.size(); i++) {
             final S3MQueue queue = outputQueues.get(i);
-            outputQueuesConnector.put(queue, serializer.serialize(output.get(i)));
+            if (output.size() <= i) {
+                break;
+            }
+            final Serializable data = output.get(i);
+            if (data != null) {
+                outputQueuesConnector.put(queue, serializer.serialize(data));
+            }
         }
     }
 

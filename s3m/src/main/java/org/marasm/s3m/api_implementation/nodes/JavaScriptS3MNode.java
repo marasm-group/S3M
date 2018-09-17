@@ -34,7 +34,11 @@ public class JavaScriptS3MNode extends BaseS3MNode {
                 List<Object> result = new ArrayList<>(castedJsObj.keySet().size());
                 for (String key : castedJsObj.keySet()) {
                     Object o = toObject(castedJsObj.get(key));
-                    result.add(Integer.parseInt(key), o);
+                    int index = Integer.parseInt(key);
+                    while (result.size() <= index) {
+                        result.add(null);
+                    }
+                    result.add(index, o);
                 }
                 return result;
             } else {

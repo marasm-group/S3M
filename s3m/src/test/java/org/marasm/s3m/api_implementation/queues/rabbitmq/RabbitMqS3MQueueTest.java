@@ -38,6 +38,13 @@ public class RabbitMqS3MQueueTest {
         DispatchQueue.get("Supplier").async(this::supplierThread);
 
         Thread.sleep(5000);
+        RabbitMqS3MConnector queueConnector = new RabbitMqS3MConnector();
+        queueConnector.init(serverConfig);
+        queueConnector.connect();
+        queueConnector.createQueue(queue);
+        queueConnector.createQueue(errorQueue);
+        queueConnector.deleteQueue(queue);
+        queueConnector.deleteQueue(errorQueue);
     }
 
     private void sendMyDataClass(S3MQueueConnector queueConnector, RemoteS3MQueue queue, S3MSerializer serializer, S3MNode source, boolean end) throws Exception {
@@ -49,7 +56,7 @@ public class RabbitMqS3MQueueTest {
     }
 
     @SneakyThrows
-    public void supplierThread() {
+    private void supplierThread() {
         S3MNode supplier = new SupplierS3MNode(new Supplier<List<Serializable>>() {
             private int i = 1;
 
@@ -76,7 +83,7 @@ public class RabbitMqS3MQueueTest {
     }
 
     @SneakyThrows
-    public void consumerThread() {
+    private void consumerThread() {
         S3MNode consumer = new ConsumerS3MNode(
                 new Consumer<List<Serializable>>() {
                     long startTime = System.nanoTime();

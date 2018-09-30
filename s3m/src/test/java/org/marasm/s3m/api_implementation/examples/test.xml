@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<app>
+    <h mi="false">
+        <author>
+            <name>Sergey Rump</name>
+            <contact>wnmsr3u@gmail.com</contact>
+        </author>
+    </h>
+    <b>
+        <q><name>com.sr3u.init</name><mc>java.lang.Integer</mc></q>
+        <q><name>com.sr3u.stage1</name><mc>java.lang.Integer</mc></q>
+        <q><name>com.sr3u.stage2</name><mc>java.util.HashMap</mc></q>
+        <q><name>com.sr3u.result</name><mc>java.lang.Integer</mc></q>
+        <q><name>com.sr3u.error</name><mc>java.util.HashMap</mc></q>
+        <n>
+            <class>org.marasm.s3m.api_implementation.nodes.JavaScriptS3MNode</class>
+            <in>com.sr3u.init</in>
+            <out>com.sr3u.init</out>
+            <out>com.sr3u.stage1</out>
+            <error>com.sr3u.error</error>
+            <properties>
+                <js>[input[0]+1, input[0]];</js>
+            </properties>
+        </n>
+        <n>
+            <class>org.marasm.s3m.api_implementation.nodes.JavaScriptS3MNode</class>
+            <in>com.sr3u.stage1</in>
+            <out>com.sr3u.stage2</out>
+            <error>com.sr3u.error</error>
+            <properties>
+                <js>[{number: input[0], current: Math.floor(Math.sqrt(input[0]))}];</js>
+            </properties>
+        </n>
+        <n>
+            <class>org.marasm.s3m.api_implementation.nodes.JavaScriptS3MNode</class>
+            <in>com.sr3u.stage2</in>
+            <out>com.sr3u.stage2</out>
+            <out>com.sr3u.result</out>
+            <error>com.sr3u.error</error>
+            <properties>
+                <js><![CDATA[
+function process (input) {
+    var context = input[0];
+    if(context.current === 0 || context.current === 1) {
+        return [null, context.number];
+    }
+    if(context.number % context.current === 0) {
+        return [null, null];
+    } else {
+        context.current--;
+        return[context, null];
+    }
+}
+process(input);
+]]></js>
+            </properties>
+        </n>-->
+    </b>
+</app>

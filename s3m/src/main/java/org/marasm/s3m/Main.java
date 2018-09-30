@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         ApplicationLoader loader = new XmlApplicationLoader();
-        ApplicationDescriptor applicationDescriptor = loader.loadApp(new FileInputStream("/Volumes/HDD/sr3u/Documents/Idea Projects/s3m/s3m/target/test.xml"));
+        ApplicationDescriptor applicationDescriptor = loader.loadApp(new FileInputStream(args[0]));
         ApplicationRunner applicationRunner = new ApplicationRunner();
         applicationRunner.run(applicationDescriptor, MqServerConfig.builder().host("localhost").build());
     }

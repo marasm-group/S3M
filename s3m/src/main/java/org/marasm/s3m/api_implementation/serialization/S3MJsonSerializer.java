@@ -19,7 +19,11 @@ public class S3MJsonSerializer implements S3MSerializer {
     @Override
     public Serializable deserialize(byte[] data, Class clazz) {
         Type typeToken = TypeToken.get(clazz).getType();
-        return gson.fromJson(new String(data), typeToken);
+        try {
+            return gson.fromJson(new String(data), typeToken);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Builder
@@ -37,9 +39,12 @@ public class NodeRunner {
     private long throttlingQueueSize = 100; //TODO: find the best default value
     @Builder.Default
     private long throttlingDelay = 100; //TODO: find the best default value
+    @Builder.Default
+    private boolean throttling = true;
+    private Set<String> inputQueueNames = Collections.emptySet();
 
     public void runLoop() {
-
+        inputQueueNames = inputQueues.stream().map(S3MQueue::getName).collect(Collectors.toSet());
         while (run) {
             ArrayList<byte[]> params = new ArrayList<>(inputQueues.size());
             try {
@@ -65,7 +70,8 @@ public class NodeRunner {
             inputQueuesNames.add(queue.getName() + ":" + queue.getId());
             if (i < params.size()) {
                 byte[] data = params.get(i);
-                inputParams.add(serializer.deserialize(data, queue.getMessageClass()));
+                //inputParams.add(serializer.deserialize(data, queue.getMessageClass()));
+                inputParams.add(new String(data));
             }
         }
         List<String> outputQueuesNames = new ArrayList<>(inputQueues.size());
@@ -118,9 +124,12 @@ public class NodeRunner {
     }
 
     private boolean throttling() throws IOException {
-        for (S3MQueue queue : outputQueues) {
-            if (outputQueuesConnector.size(queue) > throttlingQueueSize) {
-                return true;
+        if (throttling) {
+            for (S3MQueue queue : outputQueues) {
+                if (!(inputQueueNames.contains(queue.getName())) &&
+                        outputQueuesConnector.size(queue) > throttlingQueueSize) {
+                    return true;
+                }
             }
         }
         return false;
@@ -135,6 +144,14 @@ public class NodeRunner {
             }
             final Serializable data = output.get(i);
             if (data != null) {
+                Class messageClass = queue.getMessageClass();
+                if (messageClass == Integer.class) {
+                    messageClass = Number.class;
+                }
+                if (!messageClass.isInstance(data)) {
+                    System.out.println("WTF?!");
+                    List<Serializable> tryAgain = node.process(deserialize(inputData));
+                }
                 outputQueuesConnector.put(queue, serializer.serialize(data));
             }
         }

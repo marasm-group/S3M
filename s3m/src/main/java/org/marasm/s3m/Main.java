@@ -1,8 +1,19 @@
 package org.marasm.s3m;
 
+import org.marasm.s3m.api_implementation.queues.MqServerConfig;
+import org.marasm.s3m.loader.ApplicationLoader;
+import org.marasm.s3m.loader.ApplicationRunner;
+import org.marasm.s3m.loader.application.ApplicationDescriptor;
+import org.marasm.s3m.loader.xml.XmlApplicationLoader;
+
+import java.io.FileInputStream;
+
 public class Main {
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws Exception {
+        ApplicationLoader loader = new XmlApplicationLoader();
+        ApplicationDescriptor applicationDescriptor = loader.loadApp(new FileInputStream("/Volumes/HDD/sr3u/Documents/Idea Projects/s3m/s3m/target/test.xml"));
+        ApplicationRunner applicationRunner = new ApplicationRunner();
+        applicationRunner.run(applicationDescriptor, MqServerConfig.builder().host("localhost").build());
     }
 }

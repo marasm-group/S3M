@@ -1,78 +1,57 @@
 package org.marasm.s3m.api_implementation.nodes;
 
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.marasm.s3m.api.nodes.BaseS3MNode;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
 
-import javax.script.*;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@NoArgsConstructor
 public class JavaScriptS3MNode extends BaseS3MNode {
 
-    private final static ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-    private final CompiledScript script;
-    private final Invocable invocable;
+    @Getter
+    private String code;
 
-
-    public JavaScriptS3MNode(String jsCode) throws ScriptException {
-        Compilable compilable = (Compilable) engine;
-        invocable = (Invocable) engine;
-        script = compilable.compile(jsCode);
+    public JavaScriptS3MNode(String js) {
+        HashMap<String, String> properties = new HashMap<>();
+        properties.put("js", js);
+        this.init(properties);
     }
 
-    private static Object toObject(Object jsObj) {
 
-        if (jsObj == null) {
-            return null;
-        }
-        if (jsObj instanceof ScriptObjectMirror) {
-            ScriptObjectMirror castedJsObj = (ScriptObjectMirror) jsObj;
-            if (castedJsObj.isArray()) {
-                List<Object> result = new ArrayList<>(castedJsObj.keySet().size());
-                for (String key : castedJsObj.keySet()) {
-                    Object o = toObject(castedJsObj.get(key));
-                    int index = Integer.parseInt(key);
-                    while (result.size() <= index) {
-                        result.add(null);
-                    }
-                    result.add(index, o);
-                }
-                return result;
-            } else {
-                Map<String, Object> result = new HashMap<>(castedJsObj.keySet().size());
-                for (String key : castedJsObj.keySet()) {
-                    Object o = toObject(castedJsObj.get(key));
-                    result.put(key, o);
-                }
-                return result;
-            }
-        } else {
-            return jsObj;
-        }
-
+    @Override
+    @SneakyThrows
+    public void init(Map<String, String> properties) {
+        code = properties.get("js");
     }
 
     @Override
     public List<Serializable> process(List<Serializable> input) throws Exception {
-        script.eval();
-        Object result = invocable.invokeFunction("process", input);
-        if (result instanceof ScriptObjectMirror) {
-            ScriptObjectMirror resultMirror = (ScriptObjectMirror) result;
-            if (!resultMirror.isArray()) {
-                onUnexpectedResultType();
+        Context context = Context.enter();
+        try {
+            Scriptable scope = context.initStandardObjects();
+            if (input != null) {
+                Object wrapped = ScriptValueConverter.wrapValue(scope, input);
+                ScriptableObject.putProperty(scope, "input", wrapped);
             }
-        } else if (result instanceof List) {
-            List<Map<String, Object>> resultMirror = (List<Map<String, Object>>) result;
-        } else {
-            onUnexpectedResultType();
+            Object result = context.evaluateString(scope, code, "script", 1, null);
+            if (result != null && !(result instanceof Undefined)) {
+                Object o = ScriptValueConverter.unwrapValue(result);
+                return (List<Serializable>) o;
+            } else {
+                return Collections.emptyList();
+            }
+        } finally {
+            Context.exit();
         }
-        return (List<Serializable>) toObject(result);
-    }
-
-    private void onUnexpectedResultType() {
-        throw new IllegalStateException("expected javascript code to return an array!");
     }
 }

@@ -1,0 +1,12 @@
+image: maven:3-jdk-8
+
+stages:
+- build
+- deploy
+
+build:
+  stage: build
+  script: mvn package
+  artifacts:
+    paths:
+    - target/demo-0.0.1-SNAPSHOT.jar

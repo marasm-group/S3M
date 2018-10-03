@@ -12,4 +12,5 @@ import java.io.Serializable;
 public class QueueDescriptor implements Serializable {
     private String name;
     private String messageClass;
+    private String messageClassJar;
 }

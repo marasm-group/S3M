@@ -19,4 +19,12 @@ public interface S3MNode {
     default void init(Map<String, String> properties) {
     }
 
+    default boolean mutating() {
+        return true;
+    }
+
+    default String alias() {
+        return null;
+    }
+
 }

@@ -27,7 +27,7 @@ public class ApplicationRunner {
                         return RabbitMqS3MQueue.builder()
                                 .id(id.next())
                                 .name(qd.getName())
-                                .messageClass(classResolver.get(qd.getMessageClass()))
+                                .messageClass(classResolver.get(qd))
                                 .build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -45,7 +45,7 @@ public class ApplicationRunner {
         System.out.println("in " + inQueues.stream().map(S3MQueue::getName).collect(Collectors.joining(",")) + "\n" +
                 "out " + outQueues.stream().map(S3MQueue::getName).collect(Collectors.joining(",")));
         S3MQueue errorQueue = queues.get(nd.getErrorQueue());
-        S3MNode node = (S3MNode) classResolver.get(nd.getJar(), nd.getAClass()).newInstance();
+        S3MNode node = (S3MNode) classResolver.get(nd).newInstance();
         node.init(nd.getProperties());
         RabbitMqS3MConnector queueConnector = new RabbitMqS3MConnector();
         queueConnector.init(serverConfig);

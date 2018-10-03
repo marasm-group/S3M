@@ -77,6 +77,8 @@ public class XmlApplication {
             private String name;
             @XmlElement(name = "mc")
             private String messageClass;
+            @XmlElement(name = "mcjar")
+            private String messageClassJar;
         }
 
         @Data

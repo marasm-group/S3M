@@ -11,6 +11,10 @@ import java.io.FileInputStream;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        if (args.length < 1) {
+            System.out.println("S3M executable expected as argument....");
+            System.exit(-1);
+        }
         ApplicationLoader loader = new XmlApplicationLoader();
         ApplicationDescriptor applicationDescriptor = loader.loadApp(new FileInputStream(args[0]));
         ApplicationRunner applicationRunner = new ApplicationRunner();

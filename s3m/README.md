@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/marasm-group/S3M.svg?branch=master)](https://travis-ci.org/marasm-group/S3M)

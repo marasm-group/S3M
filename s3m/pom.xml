@@ -57,6 +57,12 @@
             <artifactId>jTDispatch</artifactId>
             <version>V0.1</version>
         </dependency>
+        <!-- https://github.com/marasm-group/S3M-API -->
+        <dependency>
+            <groupId>com.github.marasm-group</groupId>
+            <artifactId>S3M-API</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
 </project>

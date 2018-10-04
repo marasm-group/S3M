@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.github.marasm-group</groupId>
             <artifactId>S3M-API</artifactId>
-            <version>LATEST</version>
+            <version>master</version>
         </dependency>
     </dependencies>
 

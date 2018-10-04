@@ -17,8 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ApplicationRunner {
-    IdGen id = new IdGen();
-    ClassResolver classResolver = new ClassResolver();
+
+    private IdGen id = new IdGen();
+    private ClassResolver classResolver = new ClassResolver();
 
     public void run(ApplicationDescriptor app, MqServerConfig serverConfig) {
         Map<String, RabbitMqS3MQueue> queues = app.getQueues().stream()

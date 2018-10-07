@@ -136,34 +136,19 @@ public class NodeRunner {
     }
 
     private void processByNode(List<byte[]> inputData) throws Exception {
-        List<Serializable> output = node.process(deserialize(inputData));
+        List<byte[]> output = node.process(inputData);
         for (int i = 0; i < outputQueues.size(); i++) {
             final S3MQueue queue = outputQueues.get(i);
             if (output.size() <= i) {
                 break;
             }
-            final Serializable data = output.get(i);
+            final byte[] data = output.get(i);
             if (data != null) {
-                Class messageClass = queue.getMessageClass();
-                if (messageClass == Integer.class) {
-                    messageClass = Number.class;
-                }
-                if (!messageClass.isInstance(data)) {
-                    System.out.println("WTF?!");
-                    List<Serializable> tryAgain = node.process(deserialize(inputData));
-                }
-                outputQueuesConnector.put(queue, serializer.serialize(data));
+                outputQueuesConnector.put(queue, data);
             }
         }
     }
 
-    private List<Serializable> deserialize(List<byte[]> inputData) {
-        List<Serializable> result = new ArrayList<>(inputData.size());
-        for (int i = 0; i < inputData.size(); i++) {
-            result.add(i, serializer.deserialize(inputData.get(i), inputQueues.get(i).getMessageClass()));
-        }
-        return result;
-    }
 
     private interface Consumer<T> {
         void accept(T object) throws Throwable;

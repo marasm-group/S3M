@@ -7,6 +7,7 @@ import org.marasm.s3m.api_implementation.NodeRunner;
 import org.marasm.s3m.api_implementation.queues.MqServerConfig;
 import org.marasm.s3m.api_implementation.queues.rabbitmq.RabbitMqS3MConnector;
 import org.marasm.s3m.api_implementation.queues.rabbitmq.RabbitMqS3MQueue;
+import org.marasm.s3m.api_implementation.serialization.S3MJsonSerializer;
 import org.marasm.s3m.loader.application.ApplicationDescriptor;
 import org.marasm.s3m.loader.application.NodeDescriptor;
 
@@ -47,7 +48,7 @@ public class ApplicationRunner {
                 "out " + outQueues.stream().map(S3MQueue::getName).collect(Collectors.joining(",")));
         S3MQueue errorQueue = queues.get(nd.getErrorQueue());
         S3MNode node = (S3MNode) classResolver.get(nd).newInstance();
-        node.init(nd.getProperties());
+        node.init(nd.getProperties(), new S3MJsonSerializer());
         RabbitMqS3MConnector queueConnector = new RabbitMqS3MConnector();
         queueConnector.init(serverConfig);
         queueConnector.connect();

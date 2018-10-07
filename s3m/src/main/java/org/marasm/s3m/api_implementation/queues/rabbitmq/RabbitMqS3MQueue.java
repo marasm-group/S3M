@@ -22,9 +22,4 @@ public class RabbitMqS3MQueue implements RemoteS3MQueue {
         return id;
     }
 
-    @Override
-    public Class getMessageClass() {
-        return messageClass;
-    }
-
 }

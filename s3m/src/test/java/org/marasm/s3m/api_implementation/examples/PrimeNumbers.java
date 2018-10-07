@@ -1,29 +1,8 @@
 package org.marasm.s3m.api_implementation.examples;
 
-import com.marasm.jtdispatch.DispatchQueue;
-import lombok.SneakyThrows;
-import org.junit.Test;
-import org.marasm.s3m.api.S3MNode;
-import org.marasm.s3m.api.S3MQueue;
-import org.marasm.s3m.api.nodes.ConsumerS3MNode;
-import org.marasm.s3m.api.nodes.SupplierS3MNode;
-import org.marasm.s3m.api.queues.RemoteS3MQueue;
-import org.marasm.s3m.api.serialization.S3MSerializer;
-import org.marasm.s3m.api_implementation.ErrorMessage;
-import org.marasm.s3m.api_implementation.NodeRunner;
-import org.marasm.s3m.api_implementation.nodes.JavaScriptS3MNode;
-import org.marasm.s3m.api_implementation.queues.MqServerConfig;
-import org.marasm.s3m.api_implementation.queues.rabbitmq.RabbitMqS3MConnector;
-import org.marasm.s3m.api_implementation.queues.rabbitmq.RabbitMqS3MQueue;
-import org.marasm.s3m.api_implementation.serialization.S3MJsonSerializer;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.function.Supplier;
-
 public class PrimeNumbers {
 
-    private RabbitMqS3MQueue errorQueue = new RabbitMqS3MQueue("ERROR", 0, ErrorMessage.class);
+    /*private RabbitMqS3MQueue errorQueue = new RabbitMqS3MQueue("ERROR", 0, ErrorMessage.class);
     private RemoteS3MQueue in = RabbitMqS3MQueue.builder().id(1).name("in").messageClass(HashMap.class).build();
     private RemoteS3MQueue in_js = RabbitMqS3MQueue.builder().id(1).name("in").messageClass(HashMap.class).build();
     private RemoteS3MQueue processing_js = RabbitMqS3MQueue.builder().id(1).name("processing").messageClass(HashMap.class).build();
@@ -140,5 +119,5 @@ public class PrimeNumbers {
                 .outputQueuesConnector(queueConnector)
                 .node(processor)
                 .build().runLoop();
-    }
+    }*/
 }

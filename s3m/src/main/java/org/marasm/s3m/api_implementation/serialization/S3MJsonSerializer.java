@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 public class S3MJsonSerializer implements S3MSerializer {
 
     public static final char SEPARATOR = '\n';
+    @SuppressWarnings("Annotator") //TODO: better regexp
     private static final Pattern DOUBLE_PATTERN = Pattern.compile(
             "[\\x00-\\x20]*[+-]?(NaN|Infinity|((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)" +
                     "([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|" +
@@ -54,6 +55,9 @@ public class S3MJsonSerializer implements S3MSerializer {
 
     @Override
     public byte[] serialize(Serializable object) {
+        if (object == null) {
+            return null;
+        }
         String json = gson.toJson(object);
         String className = object.getClass().getCanonicalName();
         return (className + SEPARATOR + json).getBytes();
@@ -88,7 +92,7 @@ public class S3MJsonSerializer implements S3MSerializer {
     private Class<?> deferClassName(String className, String json) {
         try {
             return Class.forName(className);
-        } catch (ClassNotFoundException ignored) {
+        } catch (Throwable ignored) {
         }
         if (json.startsWith("{")) {
             return HashMap.class;

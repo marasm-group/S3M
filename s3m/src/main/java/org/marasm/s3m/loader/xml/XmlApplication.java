@@ -75,10 +75,6 @@ public class XmlApplication {
         @XmlAccessorType(XmlAccessType.FIELD)
         public static class Queue implements Element {
             private String name;
-            @XmlElement(name = "mc")
-            private String messageClass;
-            @XmlElement(name = "mcjar")
-            private String messageClassJar;
         }
 
         @Data

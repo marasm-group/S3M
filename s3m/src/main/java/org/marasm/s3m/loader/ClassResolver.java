@@ -3,7 +3,6 @@ package org.marasm.s3m.loader;
 import lombok.SneakyThrows;
 import org.marasm.s3m.api.S3MNode;
 import org.marasm.s3m.loader.application.NodeDescriptor;
-import org.marasm.s3m.loader.application.QueueDescriptor;
 
 import java.io.File;
 import java.net.URL;
@@ -26,11 +25,6 @@ public class ClassResolver {
     public Class<S3MNode> get(NodeDescriptor nd) {
         loadClassLoader(nd.getJar());
         return get(nd.getJar(), nd.getAClass());
-    }
-
-    public Class get(QueueDescriptor qd) {
-        loadClassLoader(qd.getMessageClassJar());
-        return get(qd.getMessageClassJar(), qd.getMessageClass());
     }
 
     @SneakyThrows

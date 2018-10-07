@@ -29,7 +29,6 @@ public class ApplicationRunner {
                         return RabbitMqS3MQueue.builder()
                                 .id(id.next())
                                 .name(qd.getName())
-                                .messageClass(classResolver.get(qd))
                                 .build();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

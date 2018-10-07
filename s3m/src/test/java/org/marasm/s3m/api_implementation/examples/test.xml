@@ -7,11 +7,11 @@
         </author>
     </h>
     <b>
-        <q><name>com.sr3u.init</name><mc>java.lang.Integer</mc></q>
-        <q><name>com.sr3u.stage1</name><mc>java.lang.Integer</mc></q>
-        <q><name>com.sr3u.stage2</name><mc>java.util.HashMap</mc></q>
-        <q><name>com.sr3u.result</name><mc>java.lang.Integer</mc></q>
-        <q><name>com.sr3u.error</name><mc>java.util.HashMap</mc></q>
+        <q><name>com.sr3u.init</name></q>
+        <q><name>com.sr3u.stage1</name></q>
+        <q><name>com.sr3u.stage2</name></q>
+        <q><name>com.sr3u.result</name></q>
+        <q><name>com.sr3u.error</name></q>
         <n>
             <class>org.marasm.s3m.api_implementation.nodes.JavaScriptS3MNode</class>
             <in>com.sr3u.init</in>

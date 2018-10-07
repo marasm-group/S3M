@@ -11,6 +11,4 @@ import java.io.Serializable;
 @EqualsAndHashCode
 public class QueueDescriptor implements Serializable {
     private String name;
-    private String messageClass;
-    private String messageClassJar;
 }

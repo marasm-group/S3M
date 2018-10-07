@@ -10,7 +10,6 @@ public class RabbitMqS3MQueue implements RemoteS3MQueue {
 
     private String name;
     private int id;
-    private Class messageClass;
 
     @Override
     public String getName() {

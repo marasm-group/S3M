@@ -70,7 +70,6 @@ public class NodeRunner {
             inputQueuesNames.add(queue.getName() + ":" + queue.getId());
             if (i < params.size()) {
                 byte[] data = params.get(i);
-                //inputParams.add(serializer.deserialize(data, queue.getMessageClass()));
                 inputParams.add(new String(data));
             }
         }
@@ -109,7 +108,7 @@ public class NodeRunner {
     }
 
     private void runLoopIteration(List<byte[]> params) throws Throwable {
-        while (throttling()) {
+        while (outputThrottling() || inputThrottling()) {
             //System.out.println("Will slow down due to a jam in output queues"); //TODO: log instead
             Thread.sleep(throttlingDelay);
         }
@@ -123,7 +122,18 @@ public class NodeRunner {
         }
     }
 
-    private boolean throttling() throws IOException {
+    private boolean inputThrottling() throws IOException {
+        if (throttling) {
+            for (S3MQueue queue : inputQueues) {
+                if (outputQueuesConnector.size(queue) <= 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean outputThrottling() throws IOException {
         if (throttling) {
             for (S3MQueue queue : outputQueues) {
                 if (!(inputQueueNames.contains(queue.getName())) &&

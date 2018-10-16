@@ -53,6 +53,26 @@ public class S3MJsonSerializer implements S3MSerializer {
         return DOUBLE_PATTERN.matcher(s).matches();
     }
 
+    private static Class<?> getClass(String className, String json) {
+        try {
+            return Class.forName(className);
+        } catch (Throwable ignored) {
+        }
+        if (json.startsWith("{")) {
+            return HashMap.class;
+        }
+        if (json.startsWith("[")) {
+            return ArrayList.class;
+        }
+        if (isInteger(json)) {
+            return Long.class;
+        }
+        if (isFloat(json)) {
+            return Double.class;
+        }
+        return String.class;
+    }
+
     @Override
     public byte[] serialize(Serializable object) {
         if (object == null) {
@@ -81,32 +101,12 @@ public class S3MJsonSerializer implements S3MSerializer {
         }
 
         try {
-            Class<?> type = deferClassName(className, json);
+            Class<?> type = getClass(className, json);
             Type typeToken = TypeToken.get(type).getType();
             return gson.fromJson(json, typeToken);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Class<?> deferClassName(String className, String json) {
-        try {
-            return Class.forName(className);
-        } catch (Throwable ignored) {
-        }
-        if (json.startsWith("{")) {
-            return HashMap.class;
-        }
-        if (json.startsWith("[")) {
-            return ArrayList.class;
-        }
-        if (isInteger(json)) {
-            return Long.class;
-        }
-        if (isFloat(json)) {
-            return Double.class;
-        }
-        return String.class;
     }
 
 }

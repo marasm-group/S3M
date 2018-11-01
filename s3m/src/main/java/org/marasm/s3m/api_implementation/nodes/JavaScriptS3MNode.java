@@ -65,4 +65,9 @@ public class JavaScriptS3MNode extends BaseS3MNode {
     private List<byte[]> serialize(List<Serializable> l) {
         return l.stream().map(serializer::serialize).collect(Collectors.toList());
     }
+
+    @Override
+    public String alias() {
+        return "JS";
+    }
 }
